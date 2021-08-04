@@ -3,16 +3,12 @@ pub mod bundle;
 pub mod component;
 pub mod entity;
 pub mod query;
-#[cfg(feature = "bevy_reflect")]
-pub mod reflect;
 pub mod schedule;
 pub mod storage;
 pub mod system;
 pub mod world;
 
 pub mod prelude {
-    #[cfg(feature = "bevy_reflect")]
-    pub use crate::reflect::ReflectComponent;
     pub use crate::{
         bundle::Bundle,
         entity::Entity,
@@ -34,7 +30,7 @@ pub mod prelude {
 mod tests {
     use crate::{
         bundle::Bundle,
-        component::{Component, ComponentDescriptor, StorageType, TypeInfo},
+        component::{Component, ComponentDescriptor, StorageType},
         entity::Entity,
         query::{Added, ChangeTrackers, Changed, FilterFetch, With, Without, WorldQuery},
         world::{Mut, World},
@@ -79,11 +75,6 @@ mod tests {
             y: i32,
         }
 
-        assert_eq!(
-            <Foo as Bundle>::type_info(),
-            vec![TypeInfo::of::<&'static str>(), TypeInfo::of::<i32>(),]
-        );
-
         let mut world = World::new();
         world
             .register_component(ComponentDescriptor::new::<i32>(StorageType::SparseSet))
@@ -115,16 +106,6 @@ mod tests {
             foo: Foo,
             b: u8,
         }
-
-        assert_eq!(
-            <Nested as Bundle>::type_info(),
-            vec![
-                TypeInfo::of::<usize>(),
-                TypeInfo::of::<&'static str>(),
-                TypeInfo::of::<i32>(),
-                TypeInfo::of::<u8>(),
-            ]
-        );
 
         let e3 = world
             .spawn()

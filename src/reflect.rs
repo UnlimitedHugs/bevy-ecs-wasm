@@ -5,8 +5,6 @@ use crate::{
     entity::{Entity, EntityMap, MapEntities, MapEntitiesError},
     world::{FromWorld, World},
 };
-use bevy_reflect::{impl_reflect_value, FromType, Reflect, ReflectDeserialize};
-
 #[derive(Clone)]
 pub struct ReflectComponent {
     add_component: fn(&mut World, Entity, &dyn Reflect),

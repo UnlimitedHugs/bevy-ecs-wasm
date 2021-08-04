@@ -4,13 +4,7 @@ use crate::{
     entity::Entity,
     storage::{BlobVec, SparseSet},
 };
-use bevy_utils::{AHasher, HashMap};
-use std::{
-    cell::UnsafeCell,
-    hash::{Hash, Hasher},
-    ops::{Index, IndexMut},
-    ptr::NonNull,
-};
+use std::{cell::UnsafeCell, collections::{HashMap, hash_map::DefaultHasher}, hash::{Hash, Hasher}, ops::{Index, IndexMut}, ptr::NonNull};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct TableId(usize);
@@ -441,7 +435,7 @@ impl Tables {
         component_ids: &[ComponentId],
         components: &Components,
     ) -> TableId {
-        let mut hasher = AHasher::default();
+        let mut hasher = DefaultHasher::default();
         component_ids.hash(&mut hasher);
         let hash = hasher.finish();
         let tables = &mut self.tables;
@@ -479,39 +473,5 @@ impl IndexMut<TableId> for Tables {
     #[inline]
     fn index_mut(&mut self, index: TableId) -> &mut Self::Output {
         &mut self.tables[index.index()]
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::{
-        component::{Components, TypeInfo},
-        entity::Entity,
-        storage::Table,
-    };
-
-    #[test]
-    fn table() {
-        let mut components = Components::default();
-        let type_info = TypeInfo::of::<usize>();
-        let component_id = components.get_or_insert_with(type_info.type_id(), || type_info);
-        let columns = &[component_id];
-        let mut table = Table::with_capacity(0, columns.len(), 64);
-        table.add_column(components.get_info(component_id).unwrap());
-        let entities = (0..200).map(Entity::new).collect::<Vec<_>>();
-        for (row, entity) in entities.iter().cloned().enumerate() {
-            unsafe {
-                table.allocate(entity);
-                let mut value = row;
-                let value_ptr = ((&mut value) as *mut usize).cast::<u8>();
-                table
-                    .get_column(component_id)
-                    .unwrap()
-                    .set_unchecked(row, value_ptr);
-            };
-        }
-
-        assert_eq!(table.capacity(), 256);
-        assert_eq!(table.len(), 200);
     }
 }

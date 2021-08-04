@@ -4,7 +4,6 @@ use crate::{
     entity::{Entities, Entity},
     world::World,
 };
-use bevy_utils::tracing::debug;
 use std::marker::PhantomData;
 
 /// A [World] mutation
@@ -318,7 +317,8 @@ pub(crate) struct Despawn {
 impl Command for Despawn {
     fn write(self: Box<Self>, world: &mut World) {
         if !world.despawn(self.entity) {
-            debug!("Failed to despawn non-existent entity {:?}", self.entity);
+            #[cfg(debug_assertions)]
+            println!("Failed to despawn non-existent entity {:?}", self.entity);
         }
     }
 }

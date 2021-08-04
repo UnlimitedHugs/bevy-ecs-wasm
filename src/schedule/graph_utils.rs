@@ -1,6 +1,5 @@
-use bevy_utils::{tracing::warn, HashMap, HashSet};
 use fixedbitset::FixedBitSet;
-use std::{borrow::Cow, fmt::Debug, hash::Hash};
+use std::{borrow::Cow, collections::{HashMap, HashSet}, fmt::Debug, hash::Hash};
 
 pub enum DependencyGraphError<Labels> {
     GraphCycles(Vec<(usize, Labels)>),
@@ -47,7 +46,7 @@ where
                             .insert(label.clone());
                     }
                 }
-                None => warn!(
+                None => println!(
                     // TODO: plumb this as proper output?
                     "{} wants to be after unknown label: {:?}",
                     nodes[index].name(),
@@ -67,7 +66,7 @@ where
                             .insert(label.clone());
                     }
                 }
-                None => warn!(
+                None => println!(
                     "{} wants to be before unknown label: {:?}",
                     nodes[index].name(),
                     label

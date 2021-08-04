@@ -11,10 +11,9 @@ use crate::{
     system::System,
     world::{World, WorldId},
 };
-use bevy_utils::{tracing::info, HashMap, HashSet};
 use downcast_rs::{impl_downcast, Downcast};
 use fixedbitset::FixedBitSet;
-use std::fmt::Debug;
+use std::{collections::{HashMap, HashSet, hash_map::RandomState}, fmt::Debug};
 
 pub trait Stage: Downcast + Send + Sync {
     /// Runs the stage; this happens once per update.
@@ -325,7 +324,7 @@ impl SystemStage {
     }
 
     fn initialize_systems(&mut self, world: &mut World) {
-        let mut criteria_labels = HashMap::default();
+        let mut criteria_labels = HashMap::<_, _, RandomState>::default();
         let uninitialized_criteria: HashMap<_, _> =
             self.uninitialized_run_criteria.drain(..).collect();
         // track the number of filtered criteria to correct run criteria indices
@@ -533,7 +532,7 @@ impl SystemStage {
                 writeln!(string, " * Exclusive systems at end of stage:").unwrap();
                 write_display_names_of_pairs(&mut string, &self.exclusive_at_end, at_end, world);
             }
-            info!("{}", string);
+            println!("{}", string);
         }
     }
 
@@ -664,7 +663,7 @@ fn process_systems(
 /// along with specific components that have triggered the warning.
 /// Systems must be topologically sorted beforehand.
 fn find_ambiguities(systems: &[impl SystemContainer]) -> Vec<(usize, usize, Vec<ComponentId>)> {
-    let mut ambiguity_set_labels = HashMap::default();
+    let mut ambiguity_set_labels = HashMap::<_, _, RandomState>::default();
     for set in systems.iter().flat_map(|c| c.ambiguity_sets()) {
         let len = ambiguity_set_labels.len();
         ambiguity_set_labels.entry(set).or_insert(len);

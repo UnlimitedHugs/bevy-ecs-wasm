@@ -1,5 +1,3 @@
-use bevy_utils::tracing::warn;
-
 use crate::{
     archetype::{Archetype, ArchetypeComponentId},
     component::ComponentId,
@@ -63,7 +61,7 @@ pub(crate) fn check_system_change_tick(
     const MAX_DELTA: u32 = (u32::MAX / 4) * 3;
     // Clamp to max delta
     if tick_delta > MAX_DELTA {
-        warn!(
+        println!(
             "Too many intervening systems have run since the last time System '{}' was last run; it may fail to detect changes.",
             system_name
         );

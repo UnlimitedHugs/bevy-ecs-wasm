@@ -9,6 +9,8 @@ mod system_container;
 mod system_descriptor;
 mod system_set;
 
+use std::collections::HashMap;
+
 pub use executor::*;
 pub use executor_parallel::*;
 pub use graph_utils::GraphNode;
@@ -24,7 +26,6 @@ use crate::{
     system::{IntoSystem, System},
     world::World,
 };
-use bevy_utils::HashMap;
 
 #[derive(Default)]
 pub struct Schedule {

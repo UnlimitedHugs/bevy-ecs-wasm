@@ -50,7 +50,6 @@ dependencies = [
  "bevy_ecs_macros",
  "bevy_reflect",
  "bevy_tasks",
- "bevy_utils",
  "bitflags",
  "downcast-rs",
  "fixedbitset",

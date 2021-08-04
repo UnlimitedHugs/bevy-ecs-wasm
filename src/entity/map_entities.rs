@@ -1,6 +1,5 @@
 use crate::entity::Entity;
-use bevy_utils::HashMap;
-use std::collections::hash_map::Entry;
+use std::collections::{HashMap, hash_map::Entry};
 use thiserror::Error;
 
 #[derive(Error, Debug)]

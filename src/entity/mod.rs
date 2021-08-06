@@ -1,6 +1,8 @@
 mod map_entities;
+#[cfg(feature = "serde")]
 mod serde;
 
+#[cfg(feature = "serde")]
 pub use self::serde::*;
 pub use map_entities::*;
 

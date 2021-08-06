@@ -1039,7 +1039,7 @@ mod tests {
     #[should_panic]
     fn multiple_worlds_same_query_iter() {
         let mut world_a = World::new();
-        let world_b = World::new();
+        let world_b = World::with_id(1);
         let mut query = world_a.query::<&i32>();
         query.iter(&world_a);
         query.iter(&world_b);
@@ -1049,7 +1049,7 @@ mod tests {
     #[should_panic]
     fn multiple_worlds_same_query_get() {
         let mut world_a = World::new();
-        let world_b = World::new();
+        let world_b = World::with_id(1);
         let mut query = world_a.query::<&i32>();
         let _ = query.get(&world_a, Entity::new(0));
         let _ = query.get(&world_b, Entity::new(0));
@@ -1059,7 +1059,7 @@ mod tests {
     #[should_panic]
     fn multiple_worlds_same_query_for_each() {
         let mut world_a = World::new();
-        let world_b = World::new();
+        let world_b = World::with_id(1);
         let mut query = world_a.query::<&i32>();
         query.for_each(&world_a, |_| {});
         query.for_each(&world_b, |_| {});

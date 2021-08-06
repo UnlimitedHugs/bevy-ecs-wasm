@@ -347,7 +347,7 @@ impl Default for RunOnce {
     fn default() -> Self {
         Self {
             ran: false,
-            system_id: SystemId::new(),
+            system_id: SystemId::new::<Self>(),
             archetype_component_access: Default::default(),
             component_access: Default::default(),
         }

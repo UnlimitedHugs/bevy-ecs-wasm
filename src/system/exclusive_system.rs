@@ -66,7 +66,7 @@ where
         ExclusiveSystemFn {
             func: Box::new(self),
             name: core::any::type_name::<F>().into(),
-            id: SystemId::new(),
+            id: SystemId::new::<F>(),
             last_change_tick: 0,
         }
     }

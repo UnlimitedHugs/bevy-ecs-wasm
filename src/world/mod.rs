@@ -28,9 +28,9 @@ use std::{
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct WorldId(u64);
 
-impl Default for WorldId {
-    fn default() -> Self {
-        WorldId(rand::random())
+impl WorldId {
+    pub fn new(id: u64) -> Self {
+        WorldId(id)
     }
 }
 
@@ -56,8 +56,14 @@ pub struct World {
 
 impl Default for World {
     fn default() -> Self {
+        World::with_id(0)
+    }
+}
+
+impl World {
+    pub fn with_id(id: u64) -> Self {
         Self {
-            id: Default::default(),
+            id: WorldId::new(id),
             entities: Default::default(),
             components: Default::default(),
             archetypes: Default::default(),
@@ -72,9 +78,7 @@ impl Default for World {
             last_change_tick: 0,
         }
     }
-}
 
-impl World {
     /// Creates a new empty [World]
     #[inline]
     pub fn new() -> World {

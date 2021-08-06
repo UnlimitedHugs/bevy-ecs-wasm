@@ -94,7 +94,7 @@ where
             system_b: system,
             archetype_component_access: Default::default(),
             component_access: Default::default(),
-            id: SystemId::new(),
+            id: SystemId::new::<ChainSystem<SystemA, SystemB>>(),
         }
     }
 }

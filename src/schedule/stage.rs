@@ -1976,7 +1976,7 @@ mod tests {
     #[should_panic]
     fn multiple_worlds_same_stage() {
         let mut world_a = World::default();
-        let mut world_b = World::default();
+        let mut world_b = World::with_id(1);
         let mut stage = SystemStage::single_threaded();
         stage.run(&mut world_a);
         stage.run(&mut world_b);

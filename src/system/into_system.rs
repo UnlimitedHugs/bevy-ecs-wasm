@@ -28,7 +28,7 @@ impl SystemState {
             archetype_component_access: Access::default(),
             component_access_set: FilteredAccessSet::default(),
             is_send: true,
-            id: SystemId::new(),
+            id: SystemId::new::<T>(),
             last_change_tick: 0,
         }
     }

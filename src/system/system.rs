@@ -4,15 +4,18 @@ use crate::{
     query::Access,
     world::World,
 };
-use std::borrow::Cow;
+use std::{any::TypeId, borrow::Cow, collections::hash_map::DefaultHasher, hash::{Hash, Hasher}};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct SystemId(pub usize);
 
 impl SystemId {
     #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        SystemId(rand::random::<usize>())
+    pub fn new<T>() -> Self {
+        let mut hasher = DefaultHasher::new();
+        TypeId::of::<Self>().hash(&mut hasher);
+        let id = (hasher.finish() % usize::MAX as u64) as usize;
+        SystemId(id)
     }
 }
 

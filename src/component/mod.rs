@@ -181,8 +181,8 @@ impl From<TypeInfo> for ComponentDescriptor {
 #[derive(Debug, Default)]
 pub struct Components {
     components: Vec<ComponentInfo>,
-    indices: std::collections::HashMap<TypeId, usize, fxhash::FxBuildHasher>,
-    resource_indices: std::collections::HashMap<TypeId, usize, fxhash::FxBuildHasher>,
+    indices: std::collections::HashMap<TypeId, usize>,
+    resource_indices: std::collections::HashMap<TypeId, usize>,
 }
 
 #[derive(Debug, Error)]

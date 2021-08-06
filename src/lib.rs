@@ -7,6 +7,7 @@ pub mod schedule;
 pub mod storage;
 pub mod system;
 pub mod world;
+pub mod event;
 
 pub mod prelude {
     pub use crate::{
@@ -23,6 +24,7 @@ pub mod prelude {
             NonSendMut, Query, QuerySet, RemovedComponents, Res, ResMut, System,
         },
         world::{FromWorld, Mut, World},
+        event::*,
     };
 }
 

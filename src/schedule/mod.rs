@@ -1,5 +1,4 @@
 mod executor;
-mod executor_parallel;
 pub mod graph_utils;
 mod label;
 mod run_criteria;
@@ -12,7 +11,6 @@ mod system_set;
 use std::collections::HashMap;
 
 pub use executor::*;
-pub use executor_parallel::*;
 pub use graph_utils::GraphNode;
 pub use label::*;
 pub use run_criteria::*;

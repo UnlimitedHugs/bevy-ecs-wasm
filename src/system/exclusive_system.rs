@@ -135,14 +135,14 @@ mod tests {
             }
         }
 
-        let mut stage = SystemStage::parallel().with_system(removal.system());
+        let mut stage = SystemStage::single_threaded().with_system(removal.system());
         world.spawn().insert(0.0f32);
         world.insert_resource(0usize);
         stage.run(&mut world);
         stage.run(&mut world);
         assert_eq!(*world.get_resource::<usize>().unwrap(), 1);
 
-        let mut stage = SystemStage::parallel().with_system(removal.exclusive_system());
+        let mut stage = SystemStage::single_threaded().with_system(removal.exclusive_system());
         world.spawn().insert(0.0f32);
         world.insert_resource(0usize);
         stage.run(&mut world);

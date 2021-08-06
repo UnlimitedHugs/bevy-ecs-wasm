@@ -6,7 +6,6 @@ use crate::{
     },
     world::{Mut, World},
 };
-use bevy_tasks::TaskPool;
 use std::{any::TypeId, fmt::Debug};
 use thiserror::Error;
 
@@ -109,52 +108,6 @@ where
         unsafe {
             self.state.for_each_unchecked_manual(
                 self.world,
-                f,
-                self.last_change_tick,
-                self.change_tick,
-            )
-        };
-    }
-
-    /// Runs `f` on each query result in parallel using the given task pool.
-    #[inline]
-    pub fn par_for_each(
-        &self,
-        task_pool: &TaskPool,
-        batch_size: usize,
-        f: impl Fn(<Q::Fetch as Fetch<'w>>::Item) + Send + Sync + Clone,
-    ) where
-        Q::Fetch: ReadOnlyFetch,
-    {
-        // SAFE: system runs without conflicts with other systems. same-system queries have runtime
-        // borrow checks when they conflict
-        unsafe {
-            self.state.par_for_each_unchecked_manual(
-                self.world,
-                task_pool,
-                batch_size,
-                f,
-                self.last_change_tick,
-                self.change_tick,
-            )
-        };
-    }
-
-    /// Runs `f` on each query result in parallel using the given task pool.
-    #[inline]
-    pub fn par_for_each_mut(
-        &mut self,
-        task_pool: &TaskPool,
-        batch_size: usize,
-        f: impl Fn(<Q::Fetch as Fetch<'w>>::Item) + Send + Sync + Clone,
-    ) {
-        // SAFE: system runs without conflicts with other systems. same-system queries have runtime
-        // borrow checks when they conflict
-        unsafe {
-            self.state.par_for_each_unchecked_manual(
-                self.world,
-                task_pool,
-                batch_size,
                 f,
                 self.last_change_tick,
                 self.change_tick,

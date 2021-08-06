@@ -9,7 +9,6 @@ use crate::{
     storage::TableId,
     world::{World, WorldId},
 };
-use bevy_tasks::TaskPool;
 use fixedbitset::FixedBitSet;
 use thiserror::Error;
 
@@ -264,58 +263,6 @@ where
         );
     }
 
-    #[inline]
-    pub fn par_for_each<'w>(
-        &mut self,
-        world: &'w World,
-        task_pool: &TaskPool,
-        batch_size: usize,
-        func: impl Fn(<Q::Fetch as Fetch<'w>>::Item) + Send + Sync + Clone,
-    ) where
-        Q::Fetch: ReadOnlyFetch,
-    {
-        // SAFE: query is read only
-        unsafe {
-            self.par_for_each_unchecked(world, task_pool, batch_size, func);
-        }
-    }
-
-    #[inline]
-    pub fn par_for_each_mut<'w>(
-        &mut self,
-        world: &'w mut World,
-        task_pool: &TaskPool,
-        batch_size: usize,
-        func: impl Fn(<Q::Fetch as Fetch<'w>>::Item) + Send + Sync + Clone,
-    ) {
-        // SAFE: query has unique world access
-        unsafe {
-            self.par_for_each_unchecked(world, task_pool, batch_size, func);
-        }
-    }
-
-    /// # Safety
-    /// This does not check for mutable query correctness. To be safe, make sure mutable queries
-    /// have unique access to the components they query.
-    #[inline]
-    pub unsafe fn par_for_each_unchecked<'w>(
-        &mut self,
-        world: &'w World,
-        task_pool: &TaskPool,
-        batch_size: usize,
-        func: impl Fn(<Q::Fetch as Fetch<'w>>::Item) + Send + Sync + Clone,
-    ) {
-        self.validate_world_and_update_archetypes(world);
-        self.par_for_each_unchecked_manual(
-            world,
-            task_pool,
-            batch_size,
-            func,
-            world.last_change_tick(),
-            world.read_change_tick(),
-        );
-    }
-
     /// # Safety
     /// This does not check for mutable query correctness. To be safe, make sure mutable queries
     /// have unique access to the components they query.
@@ -363,101 +310,6 @@ where
                 }
             }
         }
-    }
-
-    /// # Safety
-    /// This does not check for mutable query correctness. To be safe, make sure mutable queries
-    /// have unique access to the components they query.
-    /// This does not validate that `world.id()` matches `self.world_id`. Calling this on a `world`
-    /// with a mismatched WorldId is unsafe.
-    pub unsafe fn par_for_each_unchecked_manual<'w, 's>(
-        &'s self,
-        world: &'w World,
-        task_pool: &TaskPool,
-        batch_size: usize,
-        func: impl Fn(<Q::Fetch as Fetch<'w>>::Item) + Send + Sync + Clone,
-        last_change_tick: u32,
-        change_tick: u32,
-    ) {
-        task_pool.scope(|scope| {
-            let fetch =
-                <Q::Fetch as Fetch>::init(world, &self.fetch_state, last_change_tick, change_tick);
-            let filter =
-                <F::Fetch as Fetch>::init(world, &self.filter_state, last_change_tick, change_tick);
-
-            if fetch.is_dense() && filter.is_dense() {
-                let tables = &world.storages().tables;
-                for table_id in self.matched_table_ids.iter() {
-                    let table = &tables[*table_id];
-                    let mut offset = 0;
-                    while offset < table.len() {
-                        let func = func.clone();
-                        scope.spawn(async move {
-                            let mut fetch = <Q::Fetch as Fetch>::init(
-                                world,
-                                &self.fetch_state,
-                                last_change_tick,
-                                change_tick,
-                            );
-                            let mut filter = <F::Fetch as Fetch>::init(
-                                world,
-                                &self.filter_state,
-                                last_change_tick,
-                                change_tick,
-                            );
-                            let tables = &world.storages().tables;
-                            let table = &tables[*table_id];
-                            fetch.set_table(&self.fetch_state, table);
-                            filter.set_table(&self.filter_state, table);
-                            let len = batch_size.min(table.len() - offset);
-                            for table_index in offset..offset + len {
-                                if !filter.table_filter_fetch(table_index) {
-                                    continue;
-                                }
-                                let item = fetch.table_fetch(table_index);
-                                func(item);
-                            }
-                        });
-                        offset += batch_size;
-                    }
-                }
-            } else {
-                let archetypes = &world.archetypes;
-                for archetype_id in self.matched_archetype_ids.iter() {
-                    let mut offset = 0;
-                    let archetype = &archetypes[*archetype_id];
-                    while offset < archetype.len() {
-                        let func = func.clone();
-                        scope.spawn(async move {
-                            let mut fetch = <Q::Fetch as Fetch>::init(
-                                world,
-                                &self.fetch_state,
-                                last_change_tick,
-                                change_tick,
-                            );
-                            let mut filter = <F::Fetch as Fetch>::init(
-                                world,
-                                &self.filter_state,
-                                last_change_tick,
-                                change_tick,
-                            );
-                            let tables = &world.storages().tables;
-                            let archetype = &world.archetypes[*archetype_id];
-                            fetch.set_archetype(&self.fetch_state, archetype, tables);
-                            filter.set_archetype(&self.filter_state, archetype, tables);
-
-                            for archetype_index in 0..archetype.len() {
-                                if !filter.archetype_filter_fetch(archetype_index) {
-                                    continue;
-                                }
-                                func(fetch.archetype_fetch(archetype_index));
-                            }
-                        });
-                        offset += batch_size;
-                    }
-                }
-            }
-        });
     }
 }
 

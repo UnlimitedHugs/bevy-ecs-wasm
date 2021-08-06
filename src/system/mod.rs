@@ -62,7 +62,7 @@ mod tests {
 
     fn run_system<S: System<In = (), Out = ()>>(world: &mut World, system: S) {
         let mut schedule = Schedule::default();
-        let mut update = SystemStage::parallel();
+        let mut update = SystemStage::single_threaded();
         update.add_system(system);
         schedule.add_stage("update", update);
         schedule.run(world);
@@ -178,7 +178,7 @@ mod tests {
         world.insert_resource(Changed(0));
 
         let mut schedule = Schedule::default();
-        let mut update = SystemStage::parallel();
+        let mut update = SystemStage::single_threaded();
         update.add_system(incr_e_on_flip.system());
         schedule.add_stage("update", update);
         schedule.add_stage(

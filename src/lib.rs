@@ -35,9 +35,7 @@ mod tests {
         query::{Added, ChangeTrackers, Changed, FilterFetch, With, Without, WorldQuery},
         world::{Mut, World},
     };
-    use bevy_tasks::TaskPool;
-    use parking_lot::Mutex;
-    use std::{any::TypeId, sync::Arc};
+    use std::any::TypeId;
 
     #[derive(Debug, PartialEq, Eq)]
     struct A(usize);
@@ -225,26 +223,6 @@ mod tests {
             .query::<(Entity, &i32)>()
             .for_each(&world, |(e, &i)| results.push((e, i)));
         assert_eq!(results, &[(e, 123), (f, 456)]);
-    }
-
-    #[test]
-    fn par_for_each() {
-        let mut world = World::new();
-        let task_pool = TaskPool::default();
-        let e1 = world.spawn().insert(1).id();
-        let e2 = world.spawn().insert(2).id();
-        let e3 = world.spawn().insert(3).id();
-        let e4 = world.spawn().insert_bundle((4, true)).id();
-        let e5 = world.spawn().insert_bundle((5, true)).id();
-        let results = Arc::new(Mutex::new(Vec::new()));
-        world
-            .query::<(Entity, &i32)>()
-            .par_for_each(&world, &task_pool, 2, |(e, &i)| results.lock().push((e, i)));
-        results.lock().sort();
-        assert_eq!(
-            &*results.lock(),
-            &[(e1, 1), (e2, 2), (e3, 3), (e4, 4), (e5, 5)]
-        );
     }
 
     #[test]

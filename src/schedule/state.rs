@@ -508,7 +508,7 @@ mod test {
         world.insert_resource(Vec::<&'static str>::new());
         world.insert_resource(State::new(MyState::S1));
 
-        let mut stage = SystemStage::parallel();
+        let mut stage = SystemStage::single_threaded();
 
         stage.add_system_set(State::<MyState>::get_driver());
         stage
@@ -669,13 +669,13 @@ mod test {
         world.insert_resource(State::new(AppState::Main));
         world.insert_resource(false);
         world.insert_resource("control");
-        let mut stage = SystemStage::parallel().with_system(should_run_once.system());
+        let mut stage = SystemStage::single_threaded().with_system(should_run_once.system());
         stage.run(&mut world);
         assert!(*world.get_resource::<bool>().unwrap(), "after control");
 
         world.insert_resource(false);
         world.insert_resource("test");
-        let mut stage = SystemStage::parallel()
+        let mut stage = SystemStage::single_threaded()
             .with_system_set(State::<AppState>::get_driver())
             .with_system(should_run_once.system());
         stage.run(&mut world);

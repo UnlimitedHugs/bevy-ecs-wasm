@@ -17,7 +17,6 @@ categories = ["game-engines", "data-structures"]
 trace = []
 
 [dependencies]
-bevy_tasks = { version = "0.5.0" }
 bevy_ecs_macros = { version = "0.5.0" }
 
 async-channel = "1.4"

@@ -464,7 +464,7 @@ fn derive_label(input: DeriveInput, label_type: Ident) -> TokenStream2 {
 }
 
 fn bevy_ecs_path() -> syn::Path {
-    let path_str = "bevy_ecs".to_string();
+    let path_str = "bevy_ecs_wasm".to_string();
 
     let path: Path = syn::parse(path_str.parse::<TokenStream>().unwrap()).unwrap();
     path

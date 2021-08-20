@@ -7,7 +7,7 @@ use std::{
     hash::Hash,
     marker::PhantomData,
 };
-mod bevy_ecs {
+mod bevy_ecs_wasm {
     // needed for SystemParam macro
     pub use super::super::{archetype, system, world};
 }

@@ -1,14 +1,15 @@
 [package]
-name = "bevy_ecs"
+name = "bevy_ecs_wasm"
 version = "0.5.0"
 edition = "2018"
 authors = [
     "Bevy Contributors <bevyengine@gmail.com>",
     "Carter Anderson <mcanders1@gmail.com>",
+    "UnlimitedHugs <unlimitedhugs@protonmail.com>",
 ]
 description = "Bevy Engine's entity component system"
 homepage = "https://bevyengine.org"
-repository = "https://github.com/bevyengine/bevy"
+repository = "https://github.com/UnlimitedHugs/bevy-ecs-wasm"
 license = "MIT"
 keywords = ["ecs", "game", "bevy"]
 categories = ["game-engines", "data-structures"]
